@@ -31,20 +31,25 @@ main() (
     exit 1
   fi
 
-  command -v curl >/dev/null 2>&1 || {
-    printf '%s\n' 'curl is required.' >&2
-    exit 1
-  }
   mkdir -p "$target"
   temporary=$(mktemp "$target/.SKILL.md.XXXXXX")
   trap 'rm -f "$temporary"' EXIT
   trap 'exit 1' HUP INT TERM
 
-  curl --fail --silent --show-error --location \
-    --proto '=https' --proto-redir '=https' \
-    --connect-timeout 15 --max-time 120 --retry 3 \
-    https://raw.githubusercontent.com/chuntley/coordinator-skill/main/SKILL.md \
-    -o "$temporary"
+  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+    gh api -H 'Accept: application/vnd.github.raw+json' \
+      'repos/chuntley/coordinator-skill/contents/SKILL.md?ref=main' > "$temporary"
+  else
+    command -v curl >/dev/null 2>&1 || {
+      printf '%s\n' 'curl or an authenticated GitHub CLI (gh) is required.' >&2
+      exit 1
+    }
+    curl --fail --silent --show-error --location \
+      --proto '=https' --proto-redir '=https' \
+      --connect-timeout 15 --max-time 120 --retry 3 \
+      https://raw.githubusercontent.com/chuntley/coordinator-skill/main/SKILL.md \
+      -o "$temporary"
+  fi
 
   # Reject empty downloads, HTML error pages, and unexpected skill files.
   if [ "$(head -n 1 "$temporary")" != '---' ] ||

@@ -4,7 +4,15 @@ A Claude Code skill for leading coding agents across multiple workstreams in one
 
 ## Automatic installation
 
-Run this on macOS or Linux with Bash and curl installed:
+The repository is currently private. With Bash and an authenticated [GitHub CLI](https://cli.github.com/) account that has access, run:
+
+```sh
+gh api -H 'Accept: application/vnd.github.raw+json' 'repos/chuntley/coordinator-skill/contents/install.sh?ref=main' | bash
+```
+
+Add `-s -- --project` after `bash` to install in the current project. The installer uses your authenticated GitHub CLI to download the skill.
+
+For public access (if the repository is made public), use Bash and curl:
 
 ```sh
 curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh | bash
@@ -18,7 +26,7 @@ curl --fail --silent --show-error --location https://raw.githubusercontent.com/c
 
 Rerun the same command to update. The installer checks the downloaded skill, replaces it atomically, and saves a backup before replacing a different existing version. Failed downloads leave the existing skill intact. It does not change your Claude Code settings; enable experimental agent teams below.
 
-To inspect the script before running it, download it first:
+To inspect the script before running it, download it first (for private access, use the `gh api` command above with `> install.sh` instead of `| bash`):
 
 ```sh
 curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh -o install.sh
