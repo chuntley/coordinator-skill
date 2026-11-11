@@ -2,7 +2,31 @@
 
 A Claude Code skill for leading coding agents across multiple workstreams in one repository. The coordinator stays in your main conversation, maintains a prioritized queue, delegates work, manages file ownership, reviews and integrates results, and reports progress with a compact worker table. It defaults to at most three active worker assignments.
 
-## Install
+## Automatic installation
+
+Run this on macOS or Linux with Bash and curl installed:
+
+```sh
+curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh | bash
+```
+
+This installs for all projects in `~/.claude/skills/coordinator` (or under `CLAUDE_CONFIG_DIR` if set). To install only in the current project, run from its root:
+
+```sh
+curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh | bash -s -- --project
+```
+
+Rerun the same command to update. The installer checks the downloaded skill, replaces it atomically, and saves a backup before replacing a different existing version. Failed downloads leave the existing skill intact. It does not change your Claude Code settings; enable experimental agent teams below.
+
+To inspect the script before running it, download it first:
+
+```sh
+curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh -o install.sh
+less install.sh
+bash install.sh
+```
+
+## Manual installation
 
 Clone this repository, then copy the skill into your personal Claude Code skills directory to make `/coordinator` available in all projects:
 
