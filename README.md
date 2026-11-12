@@ -1,64 +1,29 @@
 # Coordinator
 
-A Claude Code skill for leading coding agents across multiple workstreams in one repository. The coordinator stays in your main conversation, maintains a prioritized queue, delegates work, manages file ownership, reviews and integrates results, and reports progress with a compact worker table. It defaults to at most three active worker assignments.
+A Claude Code and OpenAI Codex skill for leading coding agents across multiple workstreams in one repository. The coordinator stays in your main conversation, maintains a prioritized queue, delegates work, manages file ownership, reviews and integrates results, and reports progress with a compact worker table. It defaults to three active worker assignments and asks for user approval before increasing concurrency beyond three.
 
-## Automatic installation
+## Install
 
-The repository is currently private. With Bash and an authenticated [GitHub CLI](https://cli.github.com/) account that has access, run:
-
-```sh
-gh api -H 'Accept: application/vnd.github.raw+json' 'repos/chuntley/coordinator-skill/contents/install.sh?ref=main' | bash
-```
-
-Add `-s -- --project` after `bash` to install in the current project. The installer uses your authenticated GitHub CLI to download the skill.
-
-For public access (if the repository is made public), use Bash and curl:
+Run with Bash and curl:
 
 ```sh
-curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh | bash
 ```
 
-This installs for all projects in `~/.claude/skills/coordinator` (or under `CLAUDE_CONFIG_DIR` if set). To install only in the current project, run from its root:
+Choose Claude Code, OpenAI Codex, or both when prompted. The skill installs for your user:
 
-```sh
-curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh | bash -s -- --project
-```
+| Agent | Installation directory |
+| --- | --- |
+| Claude Code | `~/.claude/skills/coordinator` (or under `CLAUDE_CONFIG_DIR` if set) |
+| OpenAI Codex | `~/.agents/skills/coordinator` |
 
-Rerun the same command to update. The installer checks the downloaded skill, replaces it atomically, and saves a backup before replacing a different existing version. Failed downloads leave the existing skill intact. It does not change your Claude Code settings; enable experimental agent teams below.
+Rerun the command to update. The installer backs up changed versions and preserves the existing skill if a download fails. It does not change agent settings.
 
-To inspect the script before running it, download it first (for private access, use the `gh api` command above with `> install.sh` instead of `| bash`):
+## Agent setup
 
-```sh
-curl --fail --silent --show-error --location https://raw.githubusercontent.com/chuntley/coordinator-skill/main/install.sh -o install.sh
-less install.sh
-bash install.sh
-```
+### Claude Code: enable experimental agent teams
 
-## Manual installation
-
-Clone this repository, then copy the skill into your personal Claude Code skills directory to make `/coordinator` available in all projects:
-
-```sh
-git clone https://github.com/chuntley/coordinator-skill.git
-cd coordinator-skill
-mkdir -p ~/.claude/skills/coordinator
-cp SKILL.md ~/.claude/skills/coordinator/SKILL.md
-```
-
-If you already have a coordinator skill installed, save any local changes before replacing it. To update, run `git pull --ff-only` in this checkout and repeat the copy command.
-
-For installation in a single project instead, run these commands from that project's root, replacing the source path with this checkout's location:
-
-```sh
-mkdir -p .claude/skills/coordinator
-cp /path/to/coordinator-skill/SKILL.md .claude/skills/coordinator/SKILL.md
-```
-
-Commit the project's `.claude/skills/coordinator/SKILL.md` to share it with collaborators. See the [Claude Code skills documentation](https://code.claude.com/docs/en/skills).
-
-## Enable experimental agent teams
-
-**Enable Claude Code's experimental agent teams support for the full coordinator workflow to work.** Merge this setting into `~/.claude/settings.json`, preserving any existing settings:
+Merge this setting into `~/.claude/settings.json` (or your `CLAUDE_CONFIG_DIR/settings.json`), preserving existing settings:
 
 ```json
 {
@@ -68,25 +33,37 @@ Commit the project's `.claude/skills/coordinator/SKILL.md` to share it with coll
 }
 ```
 
-Alternatively, launch Claude Code from a shell with the flag enabled:
-
-```sh
-CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude
-```
-
 Start a new interactive Claude Code session after changing settings. Agent teams are experimental and use more tokens than a single session. The skill can fall back to subagents when native teams are unavailable. See [Anthropic's agent teams setup and limitations](https://code.claude.com/docs/en/agent-teams).
+
+### OpenAI Codex: subagents
+
+Use a current Codex release with subagent support. Current releases enable subagent workflows by default; see the [official subagent documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents). Subagents consume additional tokens. The coordinator respects session agent limits, even when you approve more than three workers. If subagent tools are unavailable, it reports that limitation and runs the queue sequentially.
 
 ## Use
 
-In Claude Code, invoke the skill with a goal:
+Start a new session in your target repository and invoke the skill with a goal.
+
+In Claude Code:
 
 ```text
 /coordinator Build the API and dashboard, with separate workers for each.
 ```
 
+In OpenAI Codex:
+
+```text
+$coordinator Build the API and dashboard, with separate workers for each.
+```
+
 Then steer the work in plain language: add or reprioritize tasks, pause a workstream, or ask for progress.
 
-- `/coordinator status` reports the queue and worker states without changing work.
-- `/coordinator stop` safely winds down the team and reports unfinished work.
+| Action | Claude Code | OpenAI Codex |
+| --- | --- | --- |
+| Report the queue and worker states without changing work | `/coordinator status` | `$coordinator status` |
+| Safely wind down workers and report unfinished work | `/coordinator stop` | `$coordinator stop` |
 
-[SKILL.md](SKILL.md) is the source of the coordinator's instructions. Edit it here, then copy it to your installation to apply changes.
+If the Codex skill does not appear, restart Codex and check `/skills` in the CLI or IDE extension. See the [official skills documentation](https://learn.chatgpt.com/docs/build-skills) for discovery and invocation.
+
+## Skill sources
+
+[claude/SKILL.md](claude/SKILL.md) contains the Claude Code instructions; [codex/SKILL.md](codex/SKILL.md) contains the Codex instructions. Keep shared workflow rules aligned while preserving each version’s worker lifecycle and invocation instructions. Edit the appropriate source when updating the skill.
