@@ -44,7 +44,14 @@ or a plain-language status request gives a read-only snapshot.
 - Respect the session agent limit, leaving room for the coordinator, even
   when the user approves a higher worker count. Brief each worker with the
   task ID, goal, decisions, baseline, file scope, dependencies, and expected
-  output.
+  output, including acceptance criteria. Workers own assignments through
+  completion and adapt their approach within the agreed goal and file ownership.
+  Resolve routine scope choices yourself; queue speculative features and
+  unrelated improvements.
+- Continue autonomously while making meaningful progress. Do not introduce
+  fixed time limits, retry counts, mandatory restarts, or additional user
+  approvals unless requested. Preserve existing authorization boundaries and
+  user limits; ask only when a material decision or authorization is missing.
 - Check the checkout and protect user edits. Give each writable area one owner.
   Verify worktree isolation for concurrent edits where supported. In a shared
   checkout, parallelize edits across disjoint files and serialize shared edits.
@@ -56,18 +63,29 @@ or a plain-language status request gives a read-only snapshot.
 - Have workers route questions, progress, blockers, interface changes, and
   results with refs or checks through you. Resolve routine choices yourself.
   For user decisions, give your recommendation and what waiting blocks.
-- If a worker stalls or fails, check its state and artifacts, ask for status
-  if reachable, and recover usable work. Retry when the prior write scope is
-  safe or isolate the replacement. Track the current assignment.
+- Own routine recovery when a worker stalls or fails. Check its state and
+  artifacts, ask for status if reachable, and preserve usable work and context.
+  Repeated failure without new evidence calls for diagnosis, a narrower
+  reproduction, or a different approach. Help or reassign when needed; retry
+  only when the prior write scope is safe or isolate the replacement. Track
+  the current assignment.
 - Checkpoint active and queued work, decisions, and refs in chat or the agreed
-  tracker. After compaction or resume, reconcile tasks, workers, and the repo
+  tracker. Checkpoints record meaningful progress and support continuation;
+  they do not require user approval by themselves. Workers report new evidence,
+  resolved uncertainties, patches, or checks and continue within the assignment.
+  After compaction or resume, reconcile tasks, workers, and the repo
   before redispatching. Restart only work still intended to run.
 
 ## Integration and updates
 
 Review the diff against the current requirements and baseline. Integrate in
-dependency order and run combined checks. Keep affected tasks open if a check
-fails and route the failure with output and tested ref.
+dependency order and run combined checks. Iterate with focused checks, then
+complete required broader validation. Repeat expensive checks when changes,
+failures, or unresolved concerns justify them. Keep affected tasks open if a
+check fails and route the failure with output and tested ref.
+
+Once acceptance criteria and required checks pass, return the work for
+integration. Queue optional polish rather than extending the assignment.
 
 Batch milestone, plan-change, and user-action updates. Keep worker chatter in
 subagent messages and results. Keep every update minimal: one
