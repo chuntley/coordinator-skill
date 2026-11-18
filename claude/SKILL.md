@@ -87,9 +87,10 @@ checks only when a change, failure, or unresolved concern warrants it. Keep
 affected work open on failure and share the output and tested ref with its owner.
 Queue optional polish.
 
-Batch routine milestones and plan changes. Escalate blockers that require user
-action as soon as identified. Name the affected workstreams and smallest action
-needed, and keep independent work moving. Include a recommendation for decisions.
+Batch routine milestones and plan changes. When a blocker requires user action,
+send **Action needed** as soon as you learn of it, before waiting for other work
+or starting cleanup. Name the affected workstreams and smallest next step.
+Include a recommendation for decisions and keep independent work moving.
 Keep worker chatter in worker messages and results. Keep updates to one or two
 short lines plus the table, with a ref when available. Include detail when it
 changes a decision or the user asks.
