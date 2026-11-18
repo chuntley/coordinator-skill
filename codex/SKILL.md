@@ -20,8 +20,9 @@ or a plain-language status request gives a read-only snapshot.
   dependencies, acceptance criteria, and next step or result. Distinguish
   ideas, queued, active, blocked, paused, and reviewable work.
 - Execute clear requests. Queue tentative ideas and investigate them read-only
-  when asked. Record findings and next steps. Default to three active worker
-  assignments. Before increasing concurrency beyond three, ask the user to
+  when asked. Record findings and next steps. Use up to three active worker
+  assignments by default. Keep short or tightly coupled steps with the lead.
+  Before increasing concurrency beyond three, ask the user to
   approve a proposed worker count and wait for approval before starting
   additional workers. Reuse approval for that count; ask again before
   exceeding it. Run independent work in parallel and keep it moving around
@@ -35,23 +36,19 @@ or a plain-language status request gives a read-only snapshot.
 
 ## Workers
 
-- Use Codex's available subagent tools to spawn workers, send follow-up
-  instructions, wait for results, and resume workers with relevant context.
-  Keep the queue in the main conversation when shared task tools are absent.
-  Steer or stop running workers through the available agent controls and close
-  completed workers when supported. If subagent tools are unavailable, say so
-  and execute the queue sequentially; do not claim workers are running.
-- Respect the session agent limit, leaving room for the coordinator, even
-  when the user approves a higher worker count. Brief each worker with the
-  task ID, goal, decisions, baseline, file scope, dependencies, and expected
-  output, including acceptance criteria. Workers own assignments through
-  completion and adapt their approach within the agreed goal and file ownership.
-  Resolve routine scope choices yourself; queue speculative features and
-  unrelated improvements.
-- Continue autonomously while making meaningful progress. Do not introduce
-  fixed time limits, retry counts, mandatory restarts, or additional user
-  approvals unless requested. Preserve existing authorization boundaries and
-  user limits; ask only when a material decision or authorization is missing.
+- Use the available Codex subagent controls to delegate, message, wait, resume,
+  steer, and stop workers. Close finished workers when no follow-up is expected
+  and the session supports it. If subagent tools are unavailable, report the
+  limit and run sequentially.
+- Respect the harness limits on workers. Reuse workers with relevant context
+  when supported. Brief workers with the task ID, goal,
+  baseline, file scope, dependencies, applicable decisions, deliverable, and
+  acceptance criteria. Send only changed or missing context on follow-ups.
+  Workers own their assignments through completion and can adapt within scope.
+  Resolve routine choices yourself and queue unrelated ideas.
+- Continue while making meaningful progress. Honor existing limits and
+  permissions. Ask only for material decisions or missing authorization.
+  Add fixed time limits, retry counts, or mandatory restarts only on request.
 - Check the checkout and protect user edits. Give each writable area one owner.
   Verify worktree isolation for concurrent edits where supported. In a shared
   checkout, parallelize edits across disjoint files and serialize shared edits.
@@ -60,56 +57,47 @@ or a plain-language status request gives a read-only snapshot.
   Ask workers already implementing the old plan to acknowledge. Revise the
   assignment for material changes and have workers identify the revision they
   completed. Recheck stale or late results before integrating.
-- Have workers route questions, progress, blockers, interface changes, and
-  results with refs or checks through you. Require prompt reports of repeated
-  failures or suspected blockers, even while investigating, rather than waiting
-  until the assignment ends. Include the affected operation, recurring symptom,
-  what has been tried, and whether useful work can continue. Reporting a blocker
-  does not require stopping useful independent work. Resolve routine choices
-  yourself. For user decisions, give your recommendation and what waiting blocks.
-- Own routine recovery when a worker stalls or fails. Check its state and
-  artifacts, ask for status if reachable, and preserve usable work and context.
-  Repeated failure without new evidence calls for diagnosis, a narrower
-  reproduction, or a different approach. Help or reassign when needed; retry
-  only when the prior write scope is safe or isolate the replacement. Track
-  the current assignment. When workers report repeated failures, check for a
-  shared cause before retrying or reassigning. If progress requires user action,
-  promptly report the blocker, affected workstreams, and smallest action needed
-  to resume using the Action needed block. Continue independent work where
-  possible; avoid repeating unchanged attempts while waiting.
+- Include reporting in each worker brief. Route questions, meaningful progress,
+  interface changes, and results with refs or checks through the coordinator.
+  Report repeated failures or suspected blockers promptly, even during
+  investigation. Include the operation, symptom, attempts, and remaining work.
+  Use live messaging when available. Otherwise include blockers in results and
+  return control if useful work cannot continue.
+- Recover stalls and failures. Inspect worker state and artifacts, ask for
+  status if reachable, and preserve usable work and context. Check for shared
+  causes before retrying or reassigning repeated failures. Diagnose, narrow the
+  reproduction, or change approach if attempts yield no new evidence. Help or
+  reassign as needed. Verify the old write scope is safe before retrying or
+  isolate the replacement. Track the current assignment.
 - Checkpoint active and queued work, decisions, and refs in chat or the agreed
-  tracker. Checkpoints record meaningful progress and support continuation;
-  they do not require user approval by themselves. Workers report new evidence,
-  resolved uncertainties, patches, or checks and continue within the assignment.
-  After compaction or resume, reconcile tasks, workers, and the repo
-  before redispatching. Restart only work still intended to run.
+  tracker as progress warrants, without waiting for approval. On resume or
+  compaction, reconcile the queue, actual worker state, and repo before
+  redispatching work still intended to run.
 
 ## Integration and updates
 
-Review the diff against the current requirements and baseline. Integrate in
-dependency order and run combined checks. Iterate with focused checks, then
-complete required broader validation. Repeat expensive checks when changes,
-failures, or unresolved concerns justify them. Keep affected tasks open if a
-check fails and route the failure with output and tested ref.
+Workers return completed work with evidence that acceptance criteria and
+required assignment checks passed. The coordinator reviews diffs against the current requirements and
+baseline, integrates in dependency order within the user's authorization, and
+runs required combined validation. Start with focused checks and repeat expensive
+checks only when a change, failure, or unresolved concern warrants it. Keep
+affected work open on failure and share the output and tested ref with its owner.
+Queue optional polish.
 
-Once acceptance criteria and required checks pass, return the work for
-integration. Queue optional polish rather than extending the assignment.
+Batch routine milestones and plan changes. Escalate blockers that require user
+action as soon as identified. Name the affected workstreams and smallest action
+needed, and keep independent work moving. Include a recommendation for decisions.
+Keep worker chatter in worker messages and results. Keep updates to one or two
+short lines plus the table, with a ref when available. Include detail when it
+changes a decision or the user asks.
 
-Batch milestone, plan-change, and user-action updates. Keep worker chatter in
-subagent messages and results. Keep every update minimal: one
-or two short lines on what finished or changed, with a ref (MR, branch, sha)
-when there is one. No design detail, evidence, or caveats unless they change
-a decision; the user asks for more when they want it.
-
-End every update, including status replies, with the worker table: one row per
+Include a worker table in every update and status reply, with one row per
 workstream, with ID, a few-word summary, and state (active, waiting, queued,
 blocked, paused, reviewable, merged, done). Keep rows short, and drop finished
-rows once the user has seen them.
+rows once the user has seen them. Retain result refs in the queue.
 
 When the user needs to decide, review, or act, put an **Action needed** block
 directly under the table as the very last thing in the message. Nothing follows
 it. Use a numbered list, one line per item: the action (merge, review, choose,
 approve), its target (MR link or ref), a very brief why, and what it blocks or
-the recommendation. For example: `1. Merge MR !35: adds the shared API;
-blocks the full suite.` Leave the block out when nothing is waiting on the
-user.
+the recommendation. Omit the block when no user action is pending.
