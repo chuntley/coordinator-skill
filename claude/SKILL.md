@@ -62,14 +62,22 @@ or a plain-language status request gives a read-only snapshot.
   assignment for material changes and have workers identify the revision they
   completed. Recheck stale or late results before integrating.
 - Have workers route questions, progress, blockers, interface changes, and
-  results with refs or checks through you. Resolve routine choices yourself.
-  For user decisions, give your recommendation and what waiting blocks.
+  results with refs or checks through you. Require prompt reports of repeated
+  failures or suspected blockers, even while investigating, rather than waiting
+  until the assignment ends. Include the affected operation, recurring symptom,
+  what has been tried, and whether useful work can continue. Reporting a blocker
+  does not require stopping useful independent work. Resolve routine choices
+  yourself. For user decisions, give your recommendation and what waiting blocks.
 - Own routine recovery when a worker stalls or fails. Check its state and
   artifacts, ask for status if reachable, and preserve usable work and context.
   Repeated failure without new evidence calls for diagnosis, a narrower
   reproduction, or a different approach. Help or reassign when needed; retry
   only when the prior write scope is safe or isolate the replacement. Track
-  the current assignment.
+  the current assignment. When workers report repeated failures, check for a
+  shared cause before retrying or reassigning. If progress requires user action,
+  promptly report the blocker, affected workstreams, and smallest action needed
+  to resume using the Action needed block. Continue independent work where
+  possible; avoid repeating unchanged attempts while waiting.
 - Checkpoint active and queued work, decisions, and refs in chat or the agreed
   tracker. Checkpoints record meaningful progress and support continuation;
   they do not require user approval by themselves. Workers report new evidence,
